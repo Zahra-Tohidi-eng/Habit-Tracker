@@ -1,62 +1,123 @@
-Habit Tracker with Streak Analysis
+# Habit Tracker with Streak Analysis
 
-This project is a command-line Python application designed to track habits, record their completions, and analyze streaks over time. 
-The application supports both daily and weekly habits and provides detailed analytics using a modular software architecture and 
-persistent storage via SQLite.
+A command-line Python application to track habits, record completions, and analyze streaks.
 
-FEATURES
-• Create, edit, and delete habits
-• Support for daily and weekly periodicity
-• Record completion dates per habit
-• Calculate longest streak per habit
-• Calculate current active streak per habit
-• Calculate longest streak overall
-• Calculate longest streak per periodicity
-• Persistent storage using SQLite
-• Fully tested using pytest
+The application supports both **daily** and **weekly** habits and provides detailed analytics using a modular architecture and SQLite database persistence.
 
-PROJECT STRUCTURE
-main.py – Command-line interface
-habit.py – Habit domain model
-database.py – SQLite persistence layer
-analyze.py – Analytics and streak calculations
-test.py – Unit tests
-README.md
-LICENSE
-.gitignore
+---
 
-INSTALLATION
-1. Clone the repository from GitHub.
-2. (Optional) Create and activate a Python virtual environment.
-3. Install dependencies using pip. Only pytest is required for testing.
+## Features
 
-USAGE
-Habits can be created using the Habit class, completions can be recorded, and analytics functions can be applied to calculate streaks.
-The analytics module operates independently of the database layer and works directly with Habit objects.
+- Create, edit, and delete habits
+- Support for **daily** and **weekly** periodicity
+- Record completion dates per habit
+- Calculate:
+  - Longest streak per habit
+  - Current active streak per habit
+  - Longest streak across all habits
+  - Longest streak per periodicity (daily / weekly)
+- Persistent storage using SQLite
+- Fully tested with `pytest`
 
-ANALYTICS MODULE
-The analytics module provides functions to compute:
-• Longest streak for a single habit
-• Current streak up to today
-• Longest streak across all habits
-• Longest streak per periodicity (daily or weekly)
+---
 
-TESTING
-The test suite is implemented using pytest and includes:
-• Tests for habit creation, editing, and deletion
-• Tests for three daily habits and two weekly habits
-• Tests for longest streak calculations
-• Tests for current streak calculations
-• Tests for aggregate analytics per periodicity
+## Project Structure
+habit_tracker/
+│
+├── main.py # CLI interface
+├── habit.py # Habit domain model
+├── database.py # SQLite persistence layer
+├── analyze.py # Analytics and streak calculations
+├── test_habit_tracker.py # Unit tests
+├── README.md
+├── LICENSE
+└── .gitignore
 
-DATABASE
-The application uses SQLite with two tables:
-• habits (id, name, periodicity, start_date)
-• completions (habit_id, completion_date)
+---
 
-DEVELOPMENT ENVIRONMENT
+## Installation
+
+### 1. Clone the repository
+git clone https://github.com/Zahra-Tohidi-eng/Habit-Tracker.git
+
+cd habit-tracker
+
+### 2. (Optional) Create a virtual environment
+python -m venv venv
+
+Activate it:
+
+- **Linux / macOS**
+source venv/bin/activate
+
+- **Windows**
+venv\Scripts\activate
+
+### 3. Install dependencies
+pip install -r requirements.txt
+
+Currently, only `pytest` is required for running tests.
+
+---
+
+## Usage
+
+Example usage in Python:
+
+```python
+from datetime import date
+from habit import Habit
+from database import save_habits, load_habits
+from analyze import longest_streak_for_habit
+
+# Create a habit
+habit = Habit(1, "Skin Routine", "daily")
+
+# Record completions
+habit.complete(date(2026, 1, 1))
+habit.complete(date(2026, 1, 2))
+
+# Save to database
+save_habits("habits.db", [habit])
+
+# Load from database
+habits = load_habits("habits.db")
+
+# Analyze streak
+print(longest_streak_for_habit(habits[0]))  # Output: 2
+```
+## Analytics Module
+
+The analytics module provides:
+
+- longest_streak_for_habit(habit)
+- current_streak_for_habit(habit)
+- longest_streak_all_habits(habits)
+- longest_streak_by_periodicity(habits)
+
+These functions operate independently from the database layer and work directly on Habit objects.
+
+## Testing
+The test suit is implemented using pytest and includes:
+- Tests for habit creation, editing, and deletion
+- Tests for 3 daily and 2 weekly habits
+- Longest streak calculations
+- Current streak calculations
+- Aggregate analytics per periodicity
+The project is fully testable and follows a modular architecture to ensure maintainability.
+
+## Database
+
+The application uses SQLite for persistence. Two tables are created:
+
+- habits (id, name, periodicity, start_date)
+- completions (habit_id, completion_date)
+
+
+## Development Environment
+
 The project was developed using PyCharm and Python 3.
 
-GITHUB
-The complete project source code is available on GitHub.
+## License
 
+MIT License © 2026 Zahra Tohidi
