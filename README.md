@@ -121,3 +121,8 @@ The project was developed using PyCharm and Python 3.
 ## License
 
 MIT License © 2026 Zahra Tohidi
+
+## Project Report
+
+The detailed project report (1–2 pages) is available here:
+Abstract-Habit Tracker.pdf
