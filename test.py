@@ -156,6 +156,22 @@ class TestHabitTracker:
         assert habit_to_delete.name not in [h.name for h in updated]
         assert len(updated) == 4
 
+    def test_edit_habit(self):
+        habits = load_habits(self.db)
+
+        habit = habits[0]
+        original_name = habit.name
+
+        from database import update_habit
+
+        update_habit(self.db, habit.id, new_name="Updated Habit")
+
+        updated_habits = load_habits(self.db)
+        updated_names = [h.name for h in updated_habits]
+
+        assert "Updated Habit" in updated_names
+        assert original_name not in updated_names
+
     # -------------------------------------------------
     # ANALYTICS TESTS
     # -------------------------------------------------
