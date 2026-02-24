@@ -24,14 +24,20 @@ The application supports both **daily** and **weekly** habits and provides detai
 ## Project Structure
 habit_tracker/
 │
-├── main.py # CLI interface
-├── habit.py # Habit domain model
-├── database.py # SQLite persistence layer
-├── analyze.py # Analytics and streak calculations
-├── test_habit_tracker.py # Unit tests
+├── screenshots/
+│   ├── Ad_habit.png
+│   ├── Analytics_output.png
+│   ├── Delete habit and clean numbering.png
+│   ├── Edit_habit.png
+│   ├── Exit.png
+│   ├── pytest_results.png
+│
+├── main.py
+├── database.py
+├── analyze.py
+├── habit.py
+├── test_habit_tracker.py
 ├── README.md
-├── LICENSE
-└── .gitignore
 
 ---
 
