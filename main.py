@@ -12,8 +12,9 @@ def print_menu():
     print("1. Add habit")
     print("2. Complete habit")
     print("3. View analytics")
-    print("4. Delete habit")
-    print("5. Exit")
+    print("4. Edit Habit")
+    print("5. Delete habit")
+    print("6. Exit")
 
 
 def get_valid_int(prompt):
@@ -67,17 +68,20 @@ def complete_habit(db, habits):
         print("No habits available.")
         return
 
-    # Display available habits
-    for h in habits:
-        print(f"{h.id}. {h.name}")
+    # Display habits with clean numbering (
+        # We use clean numbering (1..n) instead of database IDs.
+        # Database IDs are not renumbered after deletions (AUTOINCREMENT behavior),
+        # so using enumerate ensures no gaps are shown to the user.)
+    for index, h in enumerate(habits, start=1):
+        print(f"{index}. {h.name}")
 
-    hid = get_valid_int("Habit ID to complete: ")
-    if hid is None:
-        print("Invalid ID.")
+    choice = get_valid_int("Select habit: ")
+
+    if choice is None or choice < 1 or choice > len(habits):
+        print("Invalid selection.")
         return
 
-    # Find habit by ID
-    habit = next((h for h in habits if h.id == hid), None)
+    habit = habits[choice - 1]
 
     if habit:
         habit.complete()
@@ -87,37 +91,108 @@ def complete_habit(db, habits):
         print("Habit ID not found.")
 
 
-def delete_habit(db, habits):
+def edit_habit(db, habits):
     """
-    Delete a habit and all its completions from the database.
-    Also removes it from the in-memory list.
+    Edit an existing habit's name and/or periodicity.
     """
+
     if not habits:
-        print("No habits to delete.")
+        print("No habits available.")
         return
 
-    # Display available habits
-    for h in habits:
-        print(f"{h.id}. {h.name}")
+    # Show habits
+    # We use clean numbering (1..n) instead of database IDs.
+    # Database IDs are not renumbered after deletions (AUTOINCREMENT behavior),
+    # so using enumerate ensures no gaps are shown to the user.
+    for index, h in enumerate(habits, start=1):
+        print(f"{index}. {h.name} ({h.periodicity})")
 
-    hid = get_valid_int("Enter Habit ID to delete: ")
-    if hid is None:
-        print("Invalid ID.")
+    choice = get_valid_int("Select habit to edit: ")
+
+    if choice is None or choice < 1 or choice > len(habits):
+        print("Invalid selection.")
         return
 
-    habit = next((h for h in habits if h.id == hid), None)
+    habit = habits[choice - 1]
 
     if not habit:
         print("Habit not found.")
         return
 
-    # Delete related completions first (foreign key dependency)
-    cur = db.cursor()
-    cur.execute("DELETE FROM completions WHERE habit_id=?", (hid,))
-    cur.execute("DELETE FROM habits WHERE id=?", (hid,))
-    db.commit()
+    print("Leave field empty to keep current value.")
 
-    # Remove habit from in-memory list
+    new_name = input(f"New name (current: {habit.name}): ").strip()
+    new_periodicity = input(
+        f"New periodicity (daily/weekly) (current: {habit.periodicity}): "
+    ).strip().lower()
+
+    # Handle empty input
+    if new_name == "":
+        new_name = None
+
+    if new_periodicity == "":
+        new_periodicity = None
+    elif new_periodicity not in Habit.VALID_PERIODICITY:
+        print("Invalid periodicity.")
+        return
+
+    # Check duplicate name
+    if new_name and any(
+        h.name.lower() == new_name.lower() and h.id != habit.id
+        for h in habits
+    ):
+        print("Another habit with this name already exists.")
+        return
+
+    # Update database
+    database.update_habit(
+        db,
+        habit.id,
+        new_name=new_name,
+        new_periodicity=new_periodicity,
+    )
+
+    # Update in-memory object
+    if new_name:
+        habit.name = new_name
+    if new_periodicity:
+        habit.periodicity = new_periodicity
+
+    print("Habit edited successfully.")
+
+def delete_habit_cli(db, habits):
+    """
+    Delete a habit using the database layer.
+    Also removes it from the in-memory list.
+    """
+
+    if not habits:
+        print("No habits to delete.")
+        return
+
+    # Display habits with clean numbering
+    #          We use clean numbering (1..n) instead of database IDs.
+    #          Database IDs are not renumbered after deletions (AUTOINCREMENT behavior),
+    #          so using enumerate ensures no gaps are shown to the user.
+    for index, h in enumerate(habits, start=1):
+        print(f"{index}. {h.name}")
+
+    choice = get_valid_int("Select habit to delete: ")
+
+    if choice is None or choice < 1 or choice > len(habits):
+        print("Invalid selection.")
+        return
+
+    habit = habits[choice - 1]
+
+    if not habit:
+        print("Habit not found.")
+        return
+
+    # Call database layer
+    database.delete_habit(db, habit.id)
+
+    # Remove from memory
     habits.remove(habit)
 
     print(f"Habit '{habit.name}' deleted successfully.")
@@ -190,9 +265,12 @@ def run():
             show_analytics(habits)
 
         elif choice == "4":
-            delete_habit(db, habits)
+            edit_habit(db, habits)
 
         elif choice == "5":
+            delete_habit_cli(db, habits)
+
+        elif choice == "6":
             db.close()
             print("\n<<<< Keep up the good habits! See you soon! >>>>")
             break
