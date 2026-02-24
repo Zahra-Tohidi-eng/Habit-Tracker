@@ -77,7 +77,6 @@ from database import save_habits, load_habits
 from analyze import longest_streak_for_habit
 
 # Create a habit
-habit = Habit(1, "Skin Routine", "daily", date(26, 1, 1)
 
 # Record completions
 habit.complete(date(2026, 1, 1))
@@ -128,7 +127,6 @@ The application uses SQLite for persistence. Two tables are created:
 ![Analytics Output](screenshots/Analytics_output.png)
 
 ### Delete Habit and Clean Numbering
-![Delete habit and clean numbering](screenshots/Delete_habit and clean numbering.png)
 
 ### Edit habit
 ![Edit_habit](screenshots/Edit_habit.png)
@@ -146,8 +144,3 @@ The project was developed using PyCharm and Python 3.
 ## License
 
 MIT License © 2026 Zahra Tohidi
-
-## Project Report
-
-The detailed project report (1–2 pages) is available here:
-Abstract-Habit Tracker.pdf
