@@ -71,7 +71,7 @@ from database import save_habits, load_habits
 from analyze import longest_streak_for_habit
 
 # Create a habit
-habit = Habit(1, "Skin Routine", "daily")
+habit = Habit(1, "Skin Routine", "daily", date(26, 1, 1)
 
 # Record completions
 habit.complete(date(2026, 1, 1))
