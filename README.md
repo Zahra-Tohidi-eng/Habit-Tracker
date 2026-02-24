@@ -113,6 +113,25 @@ The application uses SQLite for persistence. Two tables are created:
 - habits (id, name, periodicity, start_date)
 - completions (habit_id, completion_date)
 
+## Screenshots
+
+### CLI Example
+![ADD HABIT](screenshots/Add_habit.png)
+
+### Analytics Output
+![Analytics Output](screenshots/Analytics_output.png)
+
+### Delete Habit and Clean Numbering
+![Delete habit and clean numbering](screenshots/Delete_habit and clean numbering.png)
+
+### Edit habit
+![Edit_habit](screenshots/Edit_habit.png)
+
+### Exit
+![Exit](screenshots/Exit.png)
+
+### Unit Tests Passing
+![Pytest result](screenshots/Pytest result.png)
 
 ## Development Environment
 
