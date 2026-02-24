@@ -11,6 +11,7 @@ def get_db(db_name="main.db"):
     Enables foreign key constraints.
     """
     db=sqlite3.connect(db_name)
+    db.execute("PRAGMA foreign_keys = ON")
     return db
 
 # --------------------------------------------------
@@ -35,7 +36,7 @@ def create_tables(db):
     CREATE TABLE IF NOT EXISTS completions (
         habit_id INTEGER,
         completion_date TEXT,
-        FOREIGN KEY (habit_id) REFERENCES habits(id)
+        FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
     )
     """)
 
@@ -116,3 +117,76 @@ def load_habits(db):
 
     return habits
 
+# --------------------------------------------------
+# Update Operations
+# --------------------------------------------------
+
+def update_habit(db, habit_id, new_name=None, new_periodicity=None):
+    """
+    Update habit name and/or periodicity.
+
+    Args:
+        db: Database connection
+        habit_id (int): ID of habit to update
+        new_name (str): Optional new name
+        new_periodicity (str): Optional new periodicity ('daily' or 'weekly')
+
+    Raises:
+        ValueError: If periodicity invalid
+    """
+    cur = db.cursor()
+
+    if new_periodicity and new_periodicity not in {"daily", "weekly"}:
+        raise ValueError("periodicity must be 'daily' or 'weekly'")
+
+    if new_name and new_periodicity:
+        cur.execute("""
+            UPDATE habits
+            SET name=?, periodicity=?
+            WHERE id=?
+        """, (new_name, new_periodicity, habit_id))
+
+    elif new_name:
+        cur.execute("""
+            UPDATE habits
+            SET name=?
+            WHERE id=?
+        """, (new_name, habit_id))
+
+    elif new_periodicity:
+        cur.execute("""
+            UPDATE habits
+            SET periodicity=?
+            WHERE id=?
+        """, (new_periodicity, habit_id))
+
+    db.commit()
+
+# --------------------------------------------------
+# Delete Operations
+# --------------------------------------------------
+
+def delete_habit(db, habit_id):
+    """
+    Delete a habit and all its completions from the database.
+
+    Args:
+        db: Database connection
+        habit_id (int): ID of habit to delete
+    """
+
+    cur = db.cursor()
+
+    # Delete related completions first (foreign key dependency)
+    cur.execute(
+        "DELETE FROM completions WHERE habit_id=?",
+        (habit_id,)
+    )
+
+    # Delete habit itself
+    cur.execute(
+        "DELETE FROM habits WHERE id=?",
+        (habit_id,)
+    )
+
+    db.commit()
