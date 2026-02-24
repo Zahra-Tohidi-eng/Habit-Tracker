@@ -127,6 +127,7 @@ The application uses SQLite for persistence. Two tables are created:
 ![Analytics Output](screenshots/Analytics_output.png)
 
 ### Delete Habit and Clean Numbering
+![Delete habit and clean numbering](screenshots/Delete_habit.png)
 
 ### Edit habit
 ![Edit_habit](screenshots/Edit_habit.png)
@@ -135,7 +136,7 @@ The application uses SQLite for persistence. Two tables are created:
 ![Exit](screenshots/Exit.png)
 
 ### Unit Tests Passing
-![Pytest result](screenshots/Pytest result.png)
+![Pytest result](screenshots/Pytest_result.png)
 
 ## Development Environment
 
